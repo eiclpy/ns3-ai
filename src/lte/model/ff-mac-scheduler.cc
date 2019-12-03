@@ -36,7 +36,7 @@ FfMacScheduler::FfMacScheduler ()
 : m_ulCqiFilter (SRS_UL_CQI)
 {
   NS_LOG_FUNCTION (this);
-  m_cqiRl = Create<CQIRL> (1357);
+  m_cqiDl = Create<CQIDL> (1357);
 }
 
 

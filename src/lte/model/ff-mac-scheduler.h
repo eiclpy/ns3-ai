@@ -23,7 +23,7 @@
 #define FF_MAC_SCHEDULER_H
 
 #include <ns3/object.h>
-#include "cqi-rl-env.h"
+#include "cqi-dl-env.h"
 
 
 namespace ns3 {
@@ -131,7 +131,7 @@ public:
 protected:
     
   UlCqiFilter_t m_ulCqiFilter; ///< UL CQI filter
-  Ptr<CQIRL> m_cqiRl;
+  Ptr<CQIDL> m_cqiDl;
 
 };
 

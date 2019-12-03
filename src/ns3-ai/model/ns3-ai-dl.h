@@ -28,7 +28,7 @@ struct DLEmptyInfo
   uint8_t unused; //placeholder
 } Packed;
 template <typename FeatureType, typename PredictedType, typename TargetType, typename SimInfoType = DLEmptyInfo>
-class Ns3AIDL : public SimpleRefCount<Ns3AIDL<FeatureType, PredictedType, SimInfoType>>
+class Ns3AIDL : public SimpleRefCount<Ns3AIDL<FeatureType, PredictedType, TargetType, SimInfoType>>
 {
 protected:
   uint32_t m_memSize;
@@ -99,7 +99,8 @@ Ns3AIDL<FeatureType, PredictedType, TargetType, SimInfoType>::Ns3AIDL(uint16_t i
   m_res = 0;
   m_cond = NULL;
   m_id = id;
-  m_memSize = sizeof(FeatureType) + sizeof(PredictedType) + sizeof(SimInfoType) + sizeof(bool);
+  m_memSize = sizeof(FeatureType) + sizeof(PredictedType) + sizeof(TargetType) + sizeof(SimInfoType) + sizeof(bool);
+  std::cout<<(int)m_memSize<<std::endl;
   m_baseAddr = (uint8_t *)SharedMemoryPool::Get()->RegisterMemory(id, m_memSize);
   m_feature = (FeatureType *)m_baseAddr;
   m_predicted = (PredictedType *)(m_baseAddr + sizeof(FeatureType));
@@ -550,17 +551,7 @@ void Ns3AIDL<FeatureType, PredictedType, TargetType, SimInfoType>::SetCompleted(
 template <typename FeatureType, typename PredictedType, typename TargetType, typename SimInfoType>
 void Ns3AIDL<FeatureType, PredictedType, TargetType, SimInfoType>::SetFinish(void)
 {
-  if (!m_locked)
-  {
-    SharedMemoryPool::Get()->AcquireMemory(m_id);
-    m_locked = true;
-  }
-  *m_isFinish = true;
-  if (m_locked)
-  {
-    SharedMemoryPool::Get()->ReleaseMemory(m_id);
-    m_locked = false;
-  }
+  __sync_bool_compare_and_swap (m_isFinish, false, true);
 }
 template <typename FeatureType, typename PredictedType, typename TargetType, typename SimInfoType>
 bool Ns3AIDL<FeatureType, PredictedType, TargetType, SimInfoType>::GetIsFinish(void)

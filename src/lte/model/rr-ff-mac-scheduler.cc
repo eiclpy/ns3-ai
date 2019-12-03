@@ -1108,11 +1108,13 @@ RrFfMacScheduler::DoSchedDlCqiInfoReq (const struct FfMacSchedSapProvider::Sched
           std::map <uint16_t,uint8_t>::iterator it;
           uint16_t rnti = params.m_cqiList.at (i).m_rnti;
           uint8_t newCqi = params.m_cqiList.at (i).m_wbCqi.at (0);
-          NS_ASSERT_MSG (m_cqiRl != NULL, "RL env error");
+          NS_ASSERT_MSG (m_cqiDl != NULL, "DL env error");
           if (rnti == 1)
             {
-              m_cqiRl->SetWbCQI (newCqi);
-              newCqi = m_cqiRl->GetWbCQI ();
+              uint8_t oldCqi = newCqi;
+              m_cqiDl->SetWbCQI (newCqi);
+              newCqi = m_cqiDl->GetWbCQI ();
+              std::cout<<"At: "<<Simulator::Now().GetSeconds()<<"s CQI: "<<(int)oldCqi<<"->"<<(int)newCqi<<std::endl;
             }
           it = m_p10CqiRxed.find (rnti);
           if (it == m_p10CqiRxed.end ())
